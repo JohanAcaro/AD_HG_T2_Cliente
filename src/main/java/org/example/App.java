@@ -2,8 +2,6 @@ package org.example;
 
 
 
-import java.io.IOException;
-
 import org.example.infrastructure.dto.IncidenciaDto;
 import org.example.infrastructure.entities.Client;
 import org.example.infrastructure.entities.TipoIncidencia;
@@ -25,6 +23,7 @@ public class App
         var sc = new Scanner(System.in);
         var opcion = "";
         do {
+            // Menú principal
             System.out.println("Bienvenido a la aplicación de WATERMELON");
             System.out.println("¿Qué tipo de usuario eres?");
             System.out.println("1. Cliente");
@@ -35,6 +34,7 @@ public class App
 
             opcion = sc.nextLine();
 
+            // Opciones del menú principal
             switch (opcion){
                 case "1" ->
                     // Lógica para registrar un nuevo cliente
@@ -59,21 +59,24 @@ public class App
         String usuario= "tecnico";
         String contrasena= "1234";
         System.out.println("Login de Técnico");
+        // Pedir usuario y contraseña
         System.out.println("Introduce tu nombre de usuario");
         String usuarioInt = sc.nextLine();
         System.out.println("Introduce tu contraseña");
         String contrasenaInt = sc.nextLine();
-
+        // Comprobar usuario y contraseña
         if (usuarioInt.equals(usuario) && contrasenaInt.equals(contrasena)) {
             System.out.println("Bienvenido técnico de WATERMELON");
-
+            // Pedir id de la llamada
             System.out.println("Dime el id de la llamada");
             String idLlamada = sc.nextLine();
 
             // Peticion Get a la API
             RestTemplate restTemplate = new RestTemplate();
             String url = "http://localhost:8080/info-cliente/" + idLlamada;
+            // Realizar la petición GET
             String result = restTemplate.getForObject(url, String.class);
+            // Mostrar el resultado
             System.out.println("Resultado de la petición GET: " + result);
 
         } else {
@@ -87,18 +90,21 @@ public class App
         String usuario= "direccion";
         String contrasena= "1234";
         System.out.println("Login de Dirección");
+        // Pedir usuario y contraseña
         System.out.println("Introduce tu nombre de usuario");
         String usuarioInt = sc.nextLine();
         System.out.println("Introduce tu contraseña");
         String contrasenaInt = sc.nextLine();
-
+        // Comprobar que el usuario y la contraseña son correctos
         if (usuarioInt.equals(usuario) && contrasenaInt.equals(contrasena)) {
             System.out.println("Bienvenido a la dirección de WATERMELON");
 
             // Peticion Get a la API
             RestTemplate restTemplate = new RestTemplate();
             String url = "http://localhost:8080/list-llamadas";
+            // Realizar la petición GET
             String result = restTemplate.getForObject(url, String.class);
+            // Mostrar el resultado
             System.out.println("Resultado de la petición GET: " + result);
 
 
@@ -111,6 +117,8 @@ public class App
     private static void nuevoCliente(){
         var sc = new Scanner(System.in);
         System.out.println("Bievenido al sistema de atención al cliente de WATERMELON");
+
+        // Pedir datos al usuario
         System.out.println("¿Cómo te llamas?");
         String nombre = sc.nextLine();
         System.out.println("¿Cuáles son tus apellidos?");
@@ -128,6 +136,7 @@ public class App
         date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String fecha = date.toString();
 
+        // Solicitar motivo de la llamada
         System.out.println("¿Cuál es el motivo de tu llamada?");
         String motivo = sc.nextLine();
         System.out.println("¿Qué tipo de incidencia es?");
@@ -144,12 +153,14 @@ public class App
         boolean solucionado;
         solucionado = respuesta.equals("S");
 
-
+        // Peticion POST a la API
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8080/insert";
-        IncidenciaDto incidenciaDto = new IncidenciaDto(cliente, fecha, motivo, tipoIncidencia, tipoReparacion, solucionado);
         // Establecer los datos del nuevo IncidenciaDto aquí
+        IncidenciaDto incidenciaDto = new IncidenciaDto(cliente, fecha, motivo, tipoIncidencia, tipoReparacion, solucionado);
+        // Hacer la petición POST
         ResponseEntity<String> result = restTemplate.postForEntity(url, incidenciaDto, String.class);
+        // Mostrar el resultado
         System.out.println("Resultado de la petición POST: " + result.getBody());
 
     }
