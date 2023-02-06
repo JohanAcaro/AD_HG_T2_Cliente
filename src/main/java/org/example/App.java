@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -134,6 +135,12 @@ public class App
                 }
             } catch (HttpClientErrorException e) {
                 System.out.println("No hay llamadas registradas");
+            }
+            catch (DateTimeParseException e) {
+                System.out.println("Formato de fecha incorrecto");
+            }
+            catch (Exception e) {
+                System.out.println("Error desconocido");
             }
 
         } else {
