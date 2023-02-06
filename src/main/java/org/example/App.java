@@ -7,6 +7,7 @@ import org.example.infrastructure.entities.Client;
 import org.example.infrastructure.entities.TipoIncidencia;
 import org.example.infrastructure.entities.TipoReparacion;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -71,13 +72,20 @@ public class App
             System.out.println("Dime el id de la llamada");
             String idLlamada = sc.nextLine();
 
-            // Peticion Get a la API
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "http://localhost:8080/info-cliente/" + idLlamada;
-            // Realizar la petición GET
-            String result = restTemplate.getForObject(url, String.class);
-            // Mostrar el resultado
-            System.out.println("Resultado de la petición GET: " + result);
+            try {
+                // Peticion Get a la API
+                RestTemplate restTemplate = new RestTemplate();
+                String url = "http://localhost:8080/info-cliente/" + idLlamada;
+                // Realizar la petición GET
+                String result = restTemplate.getForObject(url, String.class);
+                // Mostrar el resultado
+                System.out.println("Resultado de la petición GET: " + result);
+            }
+            catch (HttpClientErrorException e) {
+                System.out.println("No se ha encontrado la llamada con id " + idLlamada);
+            }
+
+
 
         } else {
             System.out.println("Usuario o contraseña incorrectos");
@@ -99,15 +107,34 @@ public class App
         if (usuarioInt.equals(usuario) && contrasenaInt.equals(contrasena)) {
             System.out.println("Bienvenido a la dirección de WATERMELON");
 
-            // Peticion Get a la API
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "http://localhost:8080/list-llamadas";
-            // Realizar la petición GET
-            String result = restTemplate.getForObject(url, String.class);
-            // Mostrar el resultado
-            System.out.println("Resultado de la petición GET: " + result);
-
-
+            try {
+                // Peticion Get a la API
+                RestTemplate restTemplate = new RestTemplate();
+                String url = "http://localhost:8080/list-llamadas";
+                // Realizar la petición GET
+                String result = restTemplate.getForObject(url, String.class);
+                // Mostrar el resultado
+                System.out.println("Resultado de la petición GET: " + result);
+                System.out.println("¿Quieres saber la información de una fecha en concreto? (S/N)");
+                String opcion = sc.nextLine().toUpperCase();
+                if (opcion.equals("S")) {
+                    System.out.println("Introduce la fecha en formato yyyy-MM-dd");
+                    String fecha = sc.nextLine();
+                    url = "http://localhost:8080/list-llamadas/" + fecha;
+                    // Realizar la petición GET
+                    result = restTemplate.getForObject(url, String.class);
+                    // Mostrar el resultado
+                    System.out.println("Resultado de la petición GET: " + result);
+                }
+                else if (opcion.equals("N")) {
+                    System.out.println("Gracias por usar el sistema de atención al cliente de WATERMELON");
+                }
+                else {
+                    System.out.println("Opción inválida, por favor seleccione una opción válida");
+                }
+            } catch (HttpClientErrorException e) {
+                System.out.println("No hay llamadas registradas");
+            }
 
         } else {
             System.out.println("Usuario o contraseña incorrectos");
@@ -153,15 +180,21 @@ public class App
         boolean solucionado;
         solucionado = respuesta.equals("S");
 
-        // Peticion POST a la API
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8080/insert";
-        // Establecer los datos del nuevo IncidenciaDto aquí
-        IncidenciaDto incidenciaDto = new IncidenciaDto(cliente, fecha, motivo, tipoIncidencia, tipoReparacion, solucionado);
-        // Hacer la petición POST
-        ResponseEntity<String> result = restTemplate.postForEntity(url, incidenciaDto, String.class);
-        // Mostrar el resultado
-        System.out.println("Resultado de la petición POST: " + result.getBody());
+        try{
+            // Peticion POST a la API
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://localhost:8080/insert";
+            // Establecer los datos del nuevo IncidenciaDto aquí
+            IncidenciaDto incidenciaDto = new IncidenciaDto(cliente, fecha, motivo, tipoIncidencia, tipoReparacion, solucionado);
+            // Hacer la petición POST
+            ResponseEntity<String> result = restTemplate.postForEntity(url, incidenciaDto, String.class);
+            // Mostrar el resultado
+            System.out.println("Resultado de la petición POST: " + result.getBody());
+        }
+        catch (HttpClientErrorException e){
+            System.out.println("Error al insertar la incidencia");
+        }
+
 
     }
 
