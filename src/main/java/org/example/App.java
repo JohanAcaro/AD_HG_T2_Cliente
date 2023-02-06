@@ -12,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 /**
@@ -72,7 +71,6 @@ public class App
             // Pedir id de la llamada
             System.out.println("Dime el id de la llamada");
             String idLlamada = sc.nextLine();
-
             try {
                 // Peticion Get a la API
                 RestTemplate restTemplate = new RestTemplate();
@@ -80,7 +78,7 @@ public class App
                 // Realizar la petición GET
                 String result = restTemplate.getForObject(url, String.class);
                 // Mostrar el resultado
-                System.out.println("Resultado de la petición GET: " + result);
+                System.out.println(result);
             }
             catch (HttpClientErrorException e) {
                 System.out.println("No se ha encontrado la llamada con id " + idLlamada);
@@ -115,17 +113,24 @@ public class App
                 // Realizar la petición GET
                 String result = restTemplate.getForObject(url, String.class);
                 // Mostrar el resultado
-                System.out.println("Resultado de la petición GET: " + result);
+                System.out.println(result);
                 System.out.println("¿Quieres saber la información de una fecha en concreto? (S/N)");
                 String opcion = sc.nextLine().toUpperCase();
                 if (opcion.equals("S")) {
-                    System.out.println("Introduce la fecha en formato yyyy-MM-dd");
-                    String fecha = sc.nextLine();
-                    url = "http://localhost:8080/list-llamadas/" + fecha;
-                    // Realizar la petición GET
-                    result = restTemplate.getForObject(url, String.class);
-                    // Mostrar el resultado
-                    System.out.println("Resultado de la petición GET: " + result);
+                    try {
+                        System.out.println("Introduce la fecha en formato yyyy-MM-dd");
+                        String fecha = sc.nextLine();
+                        url = "http://localhost:8080/list-llamadas/" + fecha;
+                        // Realizar la petición GET
+                        result = restTemplate.getForObject(url, String.class);
+                        // Mostrar el resultado
+                        System.out.println(result);
+                    }
+                    // Si el resultado es 404, no hay llamadas registradas en esa fecha
+                    catch (HttpClientErrorException e) {
+                        System.out.println("No hay llamadas registradas en esa fecha");
+                    }
+
                 }
                 else if (opcion.equals("N")) {
                     System.out.println("Gracias por usar el sistema de atención al cliente de WATERMELON");
@@ -135,12 +140,6 @@ public class App
                 }
             } catch (HttpClientErrorException e) {
                 System.out.println("No hay llamadas registradas");
-            }
-            catch (DateTimeParseException e) {
-                System.out.println("Formato de fecha incorrecto");
-            }
-            catch (Exception e) {
-                System.out.println("Error desconocido");
             }
 
         } else {
